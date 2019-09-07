@@ -39,9 +39,19 @@ function Merklize() {
     if(file){
       let reader = new FileReader()
       reader.onload = async (e)=>{
-        let recipients = await csv().fromString(e.target.result)
-        let merklized = merklizeDistribution(file.name.replace('.csv', ''), recipients)
-        setData(merklized)
+        if(file.name.includes('.csv'){
+          let recipients = await csv().fromString(e.target.result)
+          let merklized = merklizeDistribution(file.name.replace('.csv', ''), recipients)
+          setData(merklized)
+        } else if(file.name.includes('.json'){
+          let addressToCred = JSON.parse(e.target.result)[1].credJSON.addressToCred
+          let recipients = [] 
+          for(key in Object.keys(addressToCred){
+            recipients.push(key,"cred",addressToCred[key][addressToCred[key].length-2])
+          }
+          let merklized = merklizeDistribution(file.name.replace('.json', ''), recipients)
+          setData(merklized)
+        }
       }
       reader.readAsText(file)
     } else setData()
@@ -65,6 +75,7 @@ function ValidationData({data}){
 
   const [hash, setHash] = useState()
   useEffect(()=>{
+    console.log(ipfs)
     if(data && ipfs){
       let buf = Buffer.from(JSON.stringify(data), 'utf8')
       ipfs.add(buf, {onlyHash: true}, (err, res)=>{
