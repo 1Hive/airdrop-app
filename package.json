@@ -12,6 +12,7 @@
 		"csvtojson": "^2.0.10",
 		"ethers": "^4.0.36",
 		"ipfs-http-client": "^32.0.1",
+		"merkle-tree-solidity": "^1.0.8",
 		"multihashes": "^0.4.14",
 		"react": "^16.8.5",
 		"react-dom": "^16.8.5",
