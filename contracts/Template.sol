@@ -26,7 +26,7 @@ contract TemplateBase is APMNamehash {
     ENS public ens;
     DAOFactory public fac;
 
-    event DeployInstance(address dao);
+    event DeployDao(address dao);
     event InstalledApp(address appProxy, bytes32 appId);
 
     constructor(DAOFactory _fac, ENS _ens) public {
@@ -98,7 +98,7 @@ contract Template is TemplateBase {
         acl.revokePermission(this, tokenManager, tokenManager.MINT_ROLE());
         acl.setPermissionManager(root, tokenManager, tokenManager.MINT_ROLE());
 
-        emit DeployInstance(dao);
+        emit DeployDao(dao);
     }
 
 }
