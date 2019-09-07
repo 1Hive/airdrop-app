@@ -8,33 +8,28 @@ const decimals = (new BN(10)).pow(new BN(18))
 
 function merklizeDistribution(id, recipients) {
   recipients = recipients.reduce((prev, curr)=>{
-    let username = curr.username.replace('u/','')
-    let existing = prev.find(u=>u.username===username)
-    let karma = new BN(curr.points)
-    if(existing && existing.karma) existing.karma = existing.karma.add(karma)
-    let currency = new BN(curr.points)
-    if(existing && existing.currency) existing.currency = existing.currency.add(karma)
-    else prev.push({username,karma,currency})
+    // let username = curr.username.replace('u/','')
+    let address = curr.address
+    let existing = prev.find(u=>u.address===address)
+    let amount = new BN(curr.points)
+    if(existing && existing.amount) existing.amount = existing.amount.add(amount)
+    else prev.push({address,amount})
     return prev
   }, [])
 
   const recipientHashBuffers = recipients.map(r=>{
-    r.karma = r.karma.mul(decimals)
-    r.currency = r.currency.mul(decimals)
+    r.amount = r.amount.mul(decimals)
     // r.awardHex = web3.utils.toHex(r.award)
     // r.award = r.award.toFixed()
     // console.log(typeof u.award)
     // let usernameBuffer = utils.setLengthRight(utils.toBuffer(u.username), 32)
-    let usernameBuffer = utils.toBuffer(r.username)
-    // let uintBuffer = setLengthLeft(utils.toBuffer(r.awardHex), 32)
-    let karmaBuffer = setLengthLeft(utils.toBuffer(r.karma), 32)
-    let currencyBuffer = setLengthLeft(utils.toBuffer(r.currency), 32)
-    let hashBuffer = utils.keccak256(Buffer.concat([usernameBuffer, karmaBuffer, currencyBuffer]))
+    let addressBuffer = utils.toBuffer(r.address)
+    let amountBuffer = setLengthLeft(utils.toBuffer(r.amount), 32)
+    let hashBuffer = utils.keccak256(Buffer.concat([addressBuffer, amountBuffer]))
     let hash = utils.bufferToHex(hashBuffer)
     // console.log(hash)
     // r.award = r.award.toFixed()
-    r.karma = r.karma.toString()
-    r.currency = r.currency.toString()
+    r.amount = r.amount.toString()
 
     return hashBuffer
   })

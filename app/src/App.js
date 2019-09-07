@@ -111,11 +111,11 @@ function Distribution({distribution, username, selected, onSelect}) {
 
   const [claimed, setClaimed] = useState()
   const [userData, setUserData] = useState()
-  // useEffect(()=>{
-  //   username ? api.call('claimed', id, username).toPromise().then(setClaimed) : setClaimed()
-  //
-  //   data && Array.isArray(data.data) && setUserData(data.data.find(d=>d.username===username))
-  // }, [data, distribution, username])
+  useEffect(()=>{
+    connectedAccount ? api.call('claimed', id, connectedAccount).toPromise().then(setClaimed) : setClaimed()
+
+    data && Array.isArray(data.data) && setUserData(data.data.find(d=>d.address===connectedAccount))
+  }, [data, distribution, connectedAccount])
 
   return (
     <Card>
@@ -123,6 +123,23 @@ function Distribution({distribution, username, selected, onSelect}) {
         <Label>
           <Text color={theme.textTertiary}>#{id} </Text>
         </Label>
+        {!data &&
+          <Info.Alert style={{"margin-bottom": "10px"}}>Retrieving distribution data...</Info.Alert>
+        }
+        {data && !userData &&
+          <Info.Alert style={{"margin-bottom": "10px"}}>Nothing to claim for {connectedAccount.slice(0,8)}</Info.Alert>
+        }
+        {claimed &&
+          <Info style={{"margin-bottom": "10px"}}>You claimed in this distribution</Info>
+        }
+        {!claimed && userData &&
+          <React.Fragment>
+            <Info.Action style={{"margin-bottom": "10px"}}>You can claim <br/>{web3.toBigNumber(userData.amount).div("1e+18").toFixed()}</Info.Action>
+            <Field>
+              <Button mode="strong" emphasis="positive" onClick={()=>api.award(id, connectedAccount, web3.toBigNumber(userData.amount).toFixed(), userData.proof)}>Claim</Button>
+            </Field>
+          </React.Fragment>
+        }
       </Content>
     </Card>
   )
