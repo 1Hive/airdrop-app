@@ -33,11 +33,11 @@ contract Airdrop is AragonApp {
     string private constant ERROR_INVALID = "INVALID";
 
     function initialize(
-      address _amountManager
+      address _tokenManager
     ) onlyInit public {
         initialized();
 
-        tokenManager = TokenManager(_amountManager);
+        tokenManager = TokenManager(_tokenManager);
     }
 
     /**
