@@ -96,6 +96,7 @@ contract Template is TemplateBase {
         acl.setPermissionManager(root, acl, acl.CREATE_PERMISSIONS_ROLE());
 
         acl.revokePermission(this, tokenManager, tokenManager.MINT_ROLE());
+        acl.grantPermission(airdrop, tokenManager, tokenManager.MINT_ROLE());
         acl.setPermissionManager(root, tokenManager, tokenManager.MINT_ROLE());
 
         emit DeployDao(dao);
