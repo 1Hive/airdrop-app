@@ -7,6 +7,7 @@ import csv from 'csvtojson'
 import merklizeDistribution from './merklizeDistribution'
 import ipfsClient from 'ipfs-http-client'
 import { ethers } from 'ethers';
+import manualMapping from './manualMapping';
 
 function App() {
   const { api, network, appState, connectedAccount } = useAragonApi()
@@ -39,15 +40,19 @@ function Merklize() {
     if(file){
       let reader = new FileReader()
       reader.onload = async (e)=>{
-        if(file.name.includes('.csv'){
+        if(file.name.includes('.csv')){
           let recipients = await csv().fromString(e.target.result)
           let merklized = merklizeDistribution(file.name.replace('.csv', ''), recipients)
           setData(merklized)
-        } else if(file.name.includes('.json'){
+        } else if(file.name.includes('.json')){
           let addressToCred = JSON.parse(e.target.result)[1].credJSON.addressToCred
           let recipients = [] 
-          for(key in Object.keys(addressToCred){
-            recipients.push(key,"cred",addressToCred[key][addressToCred[key].length-2])
+          for(key in Object.keys(addressToCred)){
+            for(name in Object.keys(manualMapping)){
+              if(key.includes(name)){
+                recipients.push(manualMapping[name],"cred",addressToCred[key][addressToCred[key].length-2])
+              }
+            }
           }
           let merklized = merklizeDistribution(file.name.replace('.json', ''), recipients)
           setData(merklized)
