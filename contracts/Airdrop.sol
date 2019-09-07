@@ -15,11 +15,11 @@ contract Airdrop is AragonApp {
 
     /// Events
     event Started(uint id);
-    event Awarded(uint id, string username, uint karma, uint currency);
+    event Dropped(uint id, address recipient, uint token);
 
     /// State
     mapping(uint => Distribution) public distributions;
-    mapping(bytes32 => uint) public lastClaimed;
+    mapping(address => uint) public lastClaimed;
     TokenManager public tokenManager;
     uint public distributionsCount;
 
@@ -33,11 +33,11 @@ contract Airdrop is AragonApp {
     string private constant ERROR_INVALID = "INVALID";
 
     function initialize(
-      address _tokenManager
+      address _amountManager
     ) onlyInit public {
         initialized();
 
-        tokenManager = TokenManager(_tokenManager);
+        tokenManager = TokenManager(_amountManager);
     }
 
     /**
@@ -58,149 +58,23 @@ contract Airdrop is AragonApp {
     /**
      * @notice Award from distribution
      * @param _id Distribution id
-     * @param _username Username recepient of award
-     * @param _karma The karma amount
-     * @param _currency The currency amount
+     * @param _recipient Airdrop recipient
+     * @param _amount The token amount
      * @param _proof Merkle proof to correspond to data supplied
      */
-    function award(uint _id, string _username, uint256 _karma, uint256 _currency, bytes32[] _proof) public {
+    function award(uint _id, address _recipient, uint256 _amount, bytes32[] _proof) public {
         Distribution storage distribution = distributions[_id];
 
-        address recipient = names.ownerOf(_username);
-        require( recipient != address(0), ERROR_NOT_FOUND );
-
-        bytes32 hash = keccak256(_username, _karma, _currency);
+        bytes32 hash = keccak256(_recipient, _amount);
         require( validate(distribution.root, _proof, hash), ERROR_INVALID );
 
-        bytes32 nameHash = keccak256(_username);
+        require( _id > lastClaimed[_recipient], ERROR_PERMISSION );
 
-        require( _id > lastClaimed[nameHash], ERROR_PERMISSION );
+        lastClaimed[_recipient] = _id;
 
-        lastClaimed[nameHash] = _id;
+        tokenManager.mint(_recipient, _amount);
 
-        tokenManager.mint(recipient, _karma);
-        currencyManager.mint(recipient, _currency);
-
-        emit Awarded(_id, _username, _karma, _currency);
-    }
-
-    /**
-     * @notice Award from distribution
-     * @param _ids Distribution ids
-     * @param _username Username recepient of award
-     * @param _karmaAwards The karma amount
-     * @param _currencyAwards The currency amount
-     * @param _proofs Merkle proofs
-     * @param _proofLengths Merkle proof lengths
-     */
-    function awardFromMany(uint[] _ids, string _username, uint[] _karmaAwards, uint[] _currencyAwards, bytes _proofs, uint[] _proofLengths) public {
-   /* function awardFromMany(uint[] _ids, string _username, uint[] _karmaAwards, uint[] _currencyAwards) public { */
-
-        address recipient = names.ownerOf(_username);
-        require( recipient != address(0), ERROR_NOT_FOUND );
-
-        bytes32 nameHash = keccak256(_username);
-
-        uint totalKarmaAward;
-        uint totalCurrencyAward;
-
-        uint marker = 32;
-
-        for (uint i = 0; i < _ids.length; i++) {
-
-            uint id = _ids[i];
-
-            bytes32[] memory proof = extractProof(_proofs, marker, _proofLengths[i]);
-            marker += _proofLengths[i]*32;
-
-            bytes32 hash = keccak256(_username, _karmaAwards[i], _currencyAwards[i]);
-            require( validate(distributions[id].root, proof, hash), ERROR_INVALID );
-
-
-            require( id > lastClaimed[nameHash], ERROR_PERMISSION );
-
-            lastClaimed[nameHash] = id;
-
-            totalKarmaAward += _karmaAwards[i];
-            totalCurrencyAward += _currencyAwards[i];
-
-            emit Awarded(id, _username, _karmaAwards[i], _currencyAwards[i]);
-
-        }
-
-        tokenManager.mint(recipient, totalKarmaAward);
-        currencyManager.mint(recipient, totalCurrencyAward);
-
-    }
-
-    /* function testConvertBytes32(bytes32 _username) public constant returns (bytes32){
-        bytes memory unpadded = bytes32ToBytes(_username);
-        return keccak256( unpadded );
-    }
-
-    function testConvertString(string _username) public constant returns (bytes32){
-        return keccak256( _username );
-    }
-
-    function testBytes32ToString1(bytes32 _bytes32) public pure returns (string){
-        return string( bytes32ToBytes(_bytes32) );
-    }
-    function testBytes32ToString2(bytes32 _bytes32) public pure returns (string){
-        return string( bytes32ToBytesWithAssembly(_bytes32) );
-    }
-
-    function testOwner1(bytes32[] _bytes32) public view returns (address){
-        return names.ownerOf(string( bytes32ToBytes(_bytes32[0]) ));
-    }
-
-    function testOwner2(bytes32[] _bytes32) public view returns (address){
-        return names.ownerOf(string( bytes32ToBytesWithAssembly(_bytes32[0]) ));
-    } */
-
-    /**
-     * @notice Award from distribution
-     * @param _id Distribution ids
-     * @param _usernames Username recepient of award
-     * @param _karmaAwards The karma amount
-     * @param _currencyAwards The currency amount
-     * @param _proofs Merkle proofs
-     * @param _proofLengths Merkle proof lengths
-     */
-    function awardToMany(uint _id, bytes32[] _usernames, uint[] _karmaAwards, uint[] _currencyAwards, bytes _proofs, uint[] _proofLengths) public {
-
-        uint marker = 32;
-
-        for (uint i = 0; i < _usernames.length; i++) {
-
-            string memory username = string( bytes32ToBytes(_usernames[i]) );
-            address recipient = names.ownerOf(username);
-
-            /* require( recipient != address(0), ERROR_NOT_FOUND ); */
-            if( recipient == address(0) )
-                continue;
-
-            bytes32 nameHash = keccak256(username);
-
-            if( _id <= lastClaimed[nameHash] )
-                continue;
-
-            lastClaimed[nameHash] = _id;
-
-            bytes32[] memory proof = extractProof(_proofs, marker, _proofLengths[i]);
-            marker += _proofLengths[i]*32;
-
-            bytes32 hash = keccak256(username, _karmaAwards[i], _currencyAwards[i]);
-            /* require( validate(distributions[_id].root, proof, hash), ERROR_INVALID ); */
-            if( !validate(distributions[_id].root, proof, hash) )
-                continue;
-
-            tokenManager.mint(recipient, _karmaAwards[i]);
-            currencyManager.mint(recipient, _currencyAwards[i]);
-
-            emit Awarded(_id, username, _karmaAwards[i], _currencyAwards[i]);
-
-        }
-
+        emit Dropped(_id, _recipient, _amount);
     }
 
     function extractProof(bytes _proofs, uint _marker, uint proofLength) public pure returns (bytes32[] proof) {
@@ -232,47 +106,14 @@ contract Airdrop is AragonApp {
         return hash == root;
     }
 
-    /* function validate(bytes32 root, bytes proof, bytes32 hash) public pure returns (bool) {
-      bytes32 el;
-
-      for (uint256 i = 32; i <= proof.length; i += 32) {
-          assembly {
-              el := mload(add(proof, i))
-          }
-
-          if (hash < el) {
-              hash = keccak256(hash, el);
-          } else {
-              hash = keccak256(el, hash);
-          }
-      }
-
-      return hash == root;
-    } */
-
     /**
-     * @notice Check if username:`_username` claimed in distribution:`_id`
+     * @notice Check if recipient:`_recipient` claimed in distribution:`_id`
      * @param _id Distribution id
-     * @param _username Username to check
+     * @param _recipient Recipient to check
      */
-    function claimed(uint _id, string _username) public view returns(bool) {
-        return _id <= lastClaimed[keccak256(_username)];
+    function claimed(uint _id, address _recipient) public view returns(bool) {
+        return _id <= lastClaimed[_recipient];
     }
-
-    /* function bytes32ToBytes(bytes32 data) public pure returns (bytes result) {
-        uint len = 0;
-        while (len < 32 && uint(data[len]) != 0) {
-            ++len;
-        }
-
-        result = new bytes(len);
-        uint j = 0;
-        while (j < len) {
-            result[j] = data[j];
-            ++j;
-        }
-        return result;
-    } */
 
     function bytes32ToBytes(bytes32 data) public pure returns (bytes result) {
         uint len = 0;
@@ -287,18 +128,4 @@ contract Airdrop is AragonApp {
             mstore(add(result, 0x20), data)
         }
     }
-
-    /* function bytes32ToString(bytes32 _bytes32) public pure returns (string){
-
-        // string memory str = string(_bytes32);
-        // TypeError: Explicit type conversion not allowed from "bytes32" to "string storage pointer"
-        // thus we should fist convert bytes32 to bytes (to dynamically-sized byte array)
-
-        bytes memory bytesArray = new bytes(32);
-        for (uint256 i; i < 32; i++) {
-            bytesArray[i] = _bytes32[i];
-        }
-
-        return string(bytesArray);
-    } */
 }

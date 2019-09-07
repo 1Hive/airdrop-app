@@ -5,15 +5,17 @@
 	"dependencies": {
 		"@aragon/api": "^1.1.0",
 		"@aragon/api-react": "^1.0.0-beta.2",
+		"@aragon/apps-shared-minime": "^1.0.2",
+		"@aragon/apps-token-manager": "^2.1.0",
 		"@aragon/os": "^4.1.0",
 		"@aragon/ui": "^0.40.1",
+		"ethers": "^4.0.36",
 		"ipfs-http-client": "^32.0.1",
 		"multihashes": "^0.4.14",
 		"react": "^16.8.5",
 		"react-dom": "^16.8.5",
 		"rxjs": "^6.5.2",
-		"styled-components": "^4.2.0",
-		"ethers": "^4.0.36"
+		"styled-components": "^4.2.0"
 	},
 	"devDependencies": {
 		"@aragon/apps-shared-migrations": "^1.0.0",
@@ -48,6 +50,6 @@
 		"size": "node ./scripts/size.js"
 	},
 	"browserslist": [
-    "last 2 Chrome versions"
-  ]
+		"last 2 Chrome versions"
+	]
 }
