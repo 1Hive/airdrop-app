@@ -58,40 +58,36 @@ function Merklize() {
 function ValidationData({data}){
   const { api } = useAragonApi()
 
-  const [ipfs, setIPFS] = useState()
-  useEffect(()=>{
-    setIPFS(ipfsClient('/ip4/127.0.0.1/tcp/5001'))
+  const [hash, setHash] = useState()
+  // const [ipfs, setIPFS] = useState()
+  useEffect(async ()=>{
+    let ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001')
+    // let buf = Buffer.from(JSON.stringify(data), 'utf8')
+    // let res = await ipfs.add(buf, {onlyHash: true})
+    let res = await ipfs.add(Buffer.from(JSON.stringify(data), 'utf8'))
+    if(!res) return
+    let hash = res[0].hash
+    setHash(hash)
+    api.start(data.root, `ipfs:${hash}`)
   }, [])
 
-  const [hash, setHash] = useState()
-  useEffect(()=>{
-    if(data && ipfs){
-      let buf = Buffer.from(JSON.stringify(data), 'utf8')
-      ipfs.add(buf, {onlyHash: true}, (err, res)=>{
-        if(res)
-          setHash(res[0].hash)
-      })
-    }
-  }, [data, ipfs])
-
-  const [added, setAdded] = useState(false)
+  // const [added, setAdded] = useState(false)
+  // {!added && hash &&
+  //   <Field label="Add to ipfs:">
+  //     <Button onClick={()=>ipfs.add(Buffer.from(JSON.stringify(data), 'utf8'), (err, res)=>{if(res) setAdded(true); setHash(res[0].hash)})}>Add</Button>
+  //   </Field>
+  // }
+  // {added && hash &&
+  //   <Field label="Start new distribution:">
+  //     <Button onClick={()=>api.start(data.root, `ipfs:${hash}`)}>Start</Button>
+  //   </Field>
+  // }
 
   return (
     <div>
-      <div>root: {data.root}</div>
-      <div>hash: {hash ? hash : 'no ipfs hash generated. missing local ipfs node?'}</div>
-      {!added && hash &&
-        <Field label="Add to ipfs:">
-          <Button onClick={()=>ipfs.add(Buffer.from(JSON.stringify(data), 'utf8'), (err, res)=>{if(res) setAdded(true); setHash(res[0].hash)})}>Add</Button>
-        </Field>
-      }
-      {added &&
-        <div>You're data has been added to ipfs but may need to propagate through the network if it doesn't already appear <a href={`https://ipfs.eth.aragon.network/ipfs/${hash}`} target="_blank">here</a>.</div>
-      }
-      {added && hash &&
-        <Field label="Start new distribution:">
-          <Button onClick={()=>api.start(data.root, `ipfs:${hash}`)}>Start</Button>
-        </Field>
+      {hash
+      ? <p>You're data with merkle root ({data.root}) and ipfs hash ({hash}) has been added to ipfs but may need to propagate through the network if it doesn't already appear <a href={`https://ipfs.eth.aragon.network/ipfs/${hash}`} target="_blank">here</a>.</p>
+      : <p>no ipfs hash generated. missing local ipfs node?</p>
       }
     </div>
   )
