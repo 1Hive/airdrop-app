@@ -146,11 +146,11 @@ function Distribution({distribution, username, selected, onSelect}) {
         {!data &&
           <Info.Alert style={{"margin-bottom": "10px"}}>Retrieving distribution data...</Info.Alert>
         }
-        {data && !userData &&
+        {data && !userData && !claimed &&
           <Info.Alert style={{"margin-bottom": "10px"}}>Nothing to claim for {connectedAccount.slice(0,8)+'...'}</Info.Alert>
         }
-        {claimed &&
-          <Info style={{"margin-bottom": "10px"}}>You claimed in this distribution</Info>
+        {data && claimed &&
+          <Info style={{"margin-bottom": "10px"}}>No longer valid</Info>
         }
         {!claimed && userData &&
           <React.Fragment>
