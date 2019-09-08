@@ -156,7 +156,7 @@ function Distribution({distribution, username, selected, onSelect}) {
           <React.Fragment>
             <Info.Action style={{"margin-bottom": "10px"}}>You can claim <br/>{BigNumber(userData.amount).div("1e+18").toFixed()}</Info.Action>
             <Field>
-              <Button mode="strong" emphasis="positive" onClick={async () => await api.award(id, connectedAccount, BigNumber(userData.amount).toFixed(), userData.proof).toPromise()}>Claim</Button>
+              <Button mode="strong" emphasis="positive" onClick={async () => {console.log(id, connectedAccount, BigNumber(userData.amount).toFixed(), userData.proof); await api.award(id, connectedAccount, BigNumber(userData.amount).toFixed(), userData.proof).toPromise()}}>Claim</Button>
             </Field>
           </React.Fragment>
         }
