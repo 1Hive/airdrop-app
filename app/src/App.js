@@ -11,7 +11,7 @@ import manualMapping from './manualMapping';
 
 function App() {
   const { api, network, appState, connectedAccount } = useAragonApi()
-  const { count, distributions = [], syncing } = appState
+  const { distributions } = appState
 
   const [panelOpen, setPanelOpen] = useState(false)
   const [selected, setSelected] = useState({})
@@ -22,10 +22,9 @@ function App() {
         <h1>{connectedAccount}</h1>
         <Text size="xlarge">Distributions:</Text>
         <Grid>{distributions.map((d, i)=><Distribution distribution={d} selected={!!selected[d.id]} onSelect={(state, args)=>{if(state) selected[d.id]=args; else delete selected[d.id]; setSelected({...selected})}} />)}</Grid>
-        <Merklize />
       </AppView>
       <SidePanel title={"New Distribution"} opened={panelOpen} onClose={()=>setPanelOpen(false)}>
-        <NewDistribution />
+        <Merklize />
       </SidePanel>
     </Main>
   )
@@ -34,7 +33,6 @@ function App() {
 function Merklize() {
   const [file, setFile] = useState()
   const [data, setData] = useState()
-
 
   useEffect(()=>{
     if(file){
@@ -46,7 +44,7 @@ function Merklize() {
           setData(merklized)
         } else if(file.name.includes('.json')){
           let addressToCred = JSON.parse(e.target.result)[1].credJSON.addressToCred
-          let recipients = [] 
+          let recipients = []
           for(key in Object.keys(addressToCred)){
             for(name in Object.keys(manualMapping)){
               if(key.includes(name)){
@@ -74,29 +72,14 @@ function ValidationData({data}){
   const { api } = useAragonApi()
 
   const [hash, setHash] = useState()
-  // const [ipfs, setIPFS] = useState()
   useEffect(async ()=>{
     let ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001')
-    // let buf = Buffer.from(JSON.stringify(data), 'utf8')
-    // let res = await ipfs.add(buf, {onlyHash: true})
     let res = await ipfs.add(Buffer.from(JSON.stringify(data), 'utf8'))
     if(!res) return
     let hash = res[0].hash
     setHash(hash)
-    api.start(data.root, `ipfs:${hash}`)
+    await api.start(data.root, `ipfs:${hash}`).toPromise()
   }, [])
-
-  // const [added, setAdded] = useState(false)
-  // {!added && hash &&
-  //   <Field label="Add to ipfs:">
-  //     <Button onClick={()=>ipfs.add(Buffer.from(JSON.stringify(data), 'utf8'), (err, res)=>{if(res) setAdded(true); setHash(res[0].hash)})}>Add</Button>
-  //   </Field>
-  // }
-  // {added && hash &&
-  //   <Field label="Start new distribution:">
-  //     <Button onClick={()=>api.start(data.root, `ipfs:${hash}`)}>Start</Button>
-  //   </Field>
-  // }
 
   return (
     <div>

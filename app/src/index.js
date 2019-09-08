@@ -5,7 +5,7 @@ import App from './App'
 
 const reducer = state => {
   if (state === null) {
-    return { syncing: true }
+    return { distributions: [], syncing: true }
   }
   return state
 }
