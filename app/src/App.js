@@ -140,7 +140,7 @@ function Distribution({distribution, username, selected, onSelect}) {
           <Info.Alert style={{"margin-bottom": "10px"}}>Retrieving distribution data...</Info.Alert>
         }
         {data && !userData &&
-          <Info.Alert style={{"margin-bottom": "10px"}}>Nothing to claim for {connectedAccount.slice(0,8)}</Info.Alert>
+          <Info.Alert style={{"margin-bottom": "10px"}}>Nothing to claim for {connectedAccount.slice(0,8)+'...'}</Info.Alert>
         }
         {claimed &&
           <Info style={{"margin-bottom": "10px"}}>You claimed in this distribution</Info>
