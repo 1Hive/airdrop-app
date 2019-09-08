@@ -6,7 +6,7 @@ import { NULL_ADDRESS } from './utils'
 import csv from 'csvtojson'
 import merklizeDistribution from './merklizeDistribution'
 import ipfsClient from 'ipfs-http-client'
-import { ethers } from 'ethers';
+import BigNumber from "bignumber.js"
 import manualMapping from './manualMapping';
 
 function App() {
@@ -109,6 +109,7 @@ function Distribution({distribution, username, selected, onSelect}) {
     connectedAccount ? api.call('claimed', id, connectedAccount).toPromise().then(setClaimed) : setClaimed()
 
     data && Array.isArray(data.data) && setUserData(data.data.find(d=>d.address===connectedAccount))
+
   }, [data, distribution, connectedAccount])
 
   return (
@@ -128,9 +129,9 @@ function Distribution({distribution, username, selected, onSelect}) {
         }
         {!claimed && userData &&
           <React.Fragment>
-            <Info.Action style={{"margin-bottom": "10px"}}>You can claim <br/>{web3.toBigNumber(userData.amount).div("1e+18").toFixed()}</Info.Action>
+            <Info.Action style={{"margin-bottom": "10px"}}>You can claim <br/>{BigNumber(userData.amount).div("1e+18").toFixed()}</Info.Action>
             <Field>
-              <Button mode="strong" emphasis="positive" onClick={()=>api.award(id, connectedAccount, web3.toBigNumber(userData.amount).toFixed(), userData.proof)}>Claim</Button>
+              <Button mode="strong" emphasis="positive" onClick={async () => await api.award(id, connectedAccount, BigNumber(userData.amount).toFixed(), userData.proof).toPromise()}>Claim</Button>
             </Field>
           </React.Fragment>
         }

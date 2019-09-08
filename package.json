@@ -9,17 +9,17 @@
 		"@aragon/apps-token-manager": "^2.1.0",
 		"@aragon/os": "^4.3.0",
 		"@aragon/ui": "^0.40.2",
+		"bignumber.js": "^9.0.0",
 		"core-js": "^3.1.4",
+		"csvtojson": "^2.0.10",
+		"ipfs-http-client": "^32.0.1",
+		"merkle-tree-solidity": "^1.0.8",
+		"multihashes": "^0.4.14",
 		"react": "^16.8.6",
 		"react-dom": "^16.8.6",
 		"regenerator-runtime": "^0.13.2",
 		"rxjs": "^6.5.2",
-		"styled-components": "^4.3.2",
-		"csvtojson": "^2.0.10",
-		"ethers": "^4.0.36",
-		"ipfs-http-client": "^32.0.1",
-		"merkle-tree-solidity": "^1.0.8",
-		"multihashes": "^0.4.14"
+		"styled-components": "^4.3.2"
 	},
 	"devDependencies": {
 		"@aragon/apps-shared-migrations": "^1.0.0",
