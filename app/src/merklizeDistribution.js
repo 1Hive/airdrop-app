@@ -24,7 +24,7 @@ function merklizeDistribution(id, recipients) {
   const recipientHashBuffers = recipients.map(r=>{
     // r.amount = r.amount.mul(decimals)
     r.amount = r.amount.times(decimals)
-    r.amountHex = r.amount.toString(16)
+    r.amountHex = "0x"+r.amount.toString(16)
     console.log(r.amount, r.amountHex)
     // r.award = r.award.toFixed()
     // console.log(typeof u.award)

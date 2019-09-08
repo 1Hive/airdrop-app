@@ -87,10 +87,10 @@ function Merklize() {
     <Field label="Load distribution csv:">
       <input type="file" onChange={(e)=>{e.target.files && e.target.files.length && setFile(e.target.files[0])}} />
       {data && <ValidationData data={data} />}
-      <Button onClick={()=>{setData();}}>Clear</Button>
     </Field>
   )
 }
+// <Button onClick={()=>{setData();}}>Clear</Button>
 
 function ValidationData({data}){
   const { api } = useAragonApi()
