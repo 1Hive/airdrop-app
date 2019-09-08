@@ -66,7 +66,7 @@ contract Template is TemplateBase {
         acl.createPermission(this, dao, dao.APP_MANAGER_ROLE(), this);
 
         address root = msg.sender;
-        bytes32 airdropAppId = keccak256(abi.encodePacked(apmNamehash("open"), keccak256("airdrop")));
+        bytes32 airdropAppId = keccak256(abi.encodePacked(apmNamehash("open"), keccak256("airdropper")));
         bytes32 tokenManagerAppId = apmNamehash("token-manager");
 
         Airdrop airdrop = Airdrop(dao.newAppInstance(airdropAppId, latestVersionAppBase(airdropAppId)));
