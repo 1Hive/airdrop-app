@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useAragonApi } from '@aragon/api-react'
-import { AppBar, AppView, Button, Checkbox, Field, Info, Main, SidePanel, Text, TextInput, theme } from '@aragon/ui'
+import { AppBar, AppView, Button, Checkbox, EmptyStateCard, Field, IconFundraising, Info, Main, SidePanel, Text, TextInput, theme } from '@aragon/ui'
 import { Grid, Card, Content, Label } from './components'
 import { NULL_ADDRESS } from './utils'
 import csv from 'csvtojson'
@@ -16,12 +16,30 @@ function App() {
   const [panelOpen, setPanelOpen] = useState(false)
   const [selected, setSelected] = useState({})
 
+  const emptyContainerStyles = {
+    display: "flex",
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  }
+
   return (
     <Main>
       <AppView appBar={<AppBar title="Distribution" endContent={<Button mode="strong" onClick={()=>setPanelOpen(true)}>New distribution</Button>} />} >
-        <h1>{connectedAccount}</h1>
-        <Text size="xlarge">Distributions:</Text>
-        <Grid>{distributions.map((d, i)=><Distribution distribution={d} selected={!!selected[d.id]} onSelect={(state, args)=>{if(state) selected[d.id]=args; else delete selected[d.id]; setSelected({...selected})}} />)}</Grid>
+        { distributions.length ?
+          <React.Fragment>
+            <Text size="xlarge">Distributions:</Text>
+            <Grid>{distributions.map((d, i)=><Distribution distribution={d} selected={!!selected[d.id]} onSelect={(state, args)=>{if(state) selected[d.id]=args; else delete selected[d.id]; setSelected({...selected})}} />)}</Grid>
+          </React.Fragment> :
+          <div style={emptyContainerStyles}>
+            <EmptyStateCard
+              actionText="Create distribution"
+              onActivate={()=>setPanelOpen(true)}
+              text="There are no distributions."
+              icon={() => <IconFundraising color="green" />}
+            />
+          </div>
+        }
       </AppView>
       <SidePanel title={"New Distribution"} opened={panelOpen} onClose={()=>setPanelOpen(false)}>
         <Merklize />
@@ -61,7 +79,7 @@ function Merklize() {
   }, [file])
 
   return (
-    <Field label="Load raw distribution file:">
+    <Field label="Load distribution csv:">
       <input type="file" onChange={(e)=>setFile(e.target.files[0])} />
       {data && <ValidationData data={data} />}
     </Field>
