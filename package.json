@@ -42,9 +42,9 @@
 		"build:app": "parcel build app/index.html -d dist/ --public-url '.' --no-cache",
 		"build:script": "parcel build app/src/script.js -d dist/ --no-cache",
 		"build": "npm run sync-assets && npm run build:app && npm run build:script",
-		"publish:patch": "aragon apm publish patch --files dist",
-		"publish:minor": "aragon apm publish minor --files dist",
-		"publish:major": "aragon apm publish major --files dist",
+		"publish:patch": "aragon apm publish patch --files dist --skip-confirmation",
+		"publish:minor": "aragon apm publish minor --files dist --skip-confirmation",
+		"publish:major": "aragon apm publish major --files dist --skip-confirmation",
 		"versions": "aragon apm versions",
 		"clean": "rm -rf build && rm -rf dist"
 	},
