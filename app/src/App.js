@@ -86,35 +86,45 @@ function Merklize() {
   return (
     <Field label="Load distribution csv:">
       <input type="file" onChange={(e)=>{e.target.files && e.target.files.length && setFile(e.target.files[0])}} />
-      {data && <ValidationData data={data} />}
+      <ValidationData data={data} />
+      <Button onClick={()=>setFile()}>Clear</Button>
     </Field>
   )
 }
-// <Button onClick={()=>{setData();}}>Clear</Button>
 
 function ValidationData({data}){
+  // return (
+  //   <div>{data && data.root}</div>
+  // )
   const { api } = useAragonApi()
 
   const [hash, setHash] = useState()
   useEffect(async ()=>{
-    if(!data) return
+    if(!data) {
+      setHash()
+      return
+    }
     let ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001')
     let res = await ipfs.add(Buffer.from(JSON.stringify(data), 'utf8'))
     if(!res) return
     let hash = res[0].hash
     setHash(hash)
     await api.start(data.root, `ipfs:${hash}`).toPromise()
-  }, [])
+  }, [data])
 
   return (
-    <div>
-      {data && hash
-      ? <p>You're data with merkle root ({data.root}) and ipfs hash ({hash}) has been added to ipfs but may need to propagate through the network if it doesn't already appear <a href={`https://ipfs.eth.aragon.network/ipfs/${hash}`} target="_blank">here</a>.</p>
-      : <p>no ipfs hash generated. missing local ipfs node?</p>
+    <React.Fragment>
+      {data
       }
-    </div>
+    </React.Fragment>
   )
 }
+  // {data &&
+  //   (hash ?
+  //     <p>You're data with merkle root ({data.root}) and ipfs hash ({hash}) has been added to ipfs but may need to propagate through the network if it doesn't already appear <a href={`https://ipfs.eth.aragon.network/ipfs/${hash}`} target="_blank">here</a>.</p> :
+  //     <p>no ipfs hash generated. missing local ipfs node?</p>
+  //   )
+  // }
 
 function Distribution({distribution, username, selected, onSelect}) {
   const { id, dataURI } = distribution
