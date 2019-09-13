@@ -77,7 +77,9 @@ contract Template is TemplateBase {
 
         // Initialize apps
         tokenManager.initialize(token, false, 0);
+        emit InstalledApp(tokenManager, tokenManagerAppId);
         airdrop.initialize(tokenManager);
+        emit InstalledApp(airdrop, airdropAppId);
 
         acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), this);
         acl.createPermission(airdrop, tokenManager, tokenManager.BURN_ROLE(), root);
