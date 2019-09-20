@@ -22,7 +22,7 @@ api.store(
         console.log("started", event.returnValues.id)
         newState = {...state, distributions: [distribution].concat((state && state.distributions) || []) }
         break
-      case 'Dropped':
+      case 'Received':
         newState = {...state}
         break
       default:

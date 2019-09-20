@@ -11,15 +11,16 @@ contract Airdrop is AragonApp {
     struct Distribution {
       bytes32 root;
       string dataURI;
+      mapping(address => bool) received;
     }
 
     /// Events
     event Started(uint id);
-    event Dropped(uint id, address recipient, uint token);
+    event Received(uint id, address recipient, uint amount);
 
     /// State
     mapping(uint => Distribution) public distributions;
-    mapping(address => uint) public lastClaimed;
+    /* mapping(address => uint) public lastClaimed; */
     TokenManager public tokenManager;
     uint public distributionsCount;
 
@@ -68,13 +69,15 @@ contract Airdrop is AragonApp {
         bytes32 hash = keccak256(_recipient, _amount);
         require( validate(distribution.root, _proof, hash), ERROR_INVALID );
 
-        require( _id > lastClaimed[_recipient], ERROR_PERMISSION );
+        /* require( _id > lastClaimed[_recipient], ERROR_PERMISSION ); */
+        require( !distributions[_id].received[_recipient], ERROR_PERMISSION );
 
-        lastClaimed[_recipient] = _id;
+        /* lastClaimed[_recipient] = _id; */
+        distributions[_id].received[_recipient] = true;
 
         tokenManager.mint(_recipient, _amount);
 
-        emit Dropped(_id, _recipient, _amount);
+        emit Received(_id, _recipient, _amount);
     }
 
     function extractProof(bytes _proofs, uint _marker, uint proofLength) public pure returns (bytes32[] proof) {
@@ -107,12 +110,13 @@ contract Airdrop is AragonApp {
     }
 
     /**
-     * @notice Check if recipient:`_recipient` claimed in distribution:`_id`
+     * @notice Check if recipient:`_recipient` received from distribution:`_id`
      * @param _id Distribution id
      * @param _recipient Recipient to check
      */
-    function claimed(uint _id, address _recipient) public view returns(bool) {
-        return _id <= lastClaimed[_recipient];
+    function received(uint _id, address _recipient) public view returns(bool) {
+        /* return _id <= lastClaimed[_recipient]; */
+        return distributions[_id].received[_recipient];
     }
 
     function bytes32ToBytes(bytes32 data) public pure returns (bytes result) {

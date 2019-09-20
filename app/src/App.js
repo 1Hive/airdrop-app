@@ -136,10 +136,10 @@ function Distribution({distribution, username, selected, onSelect}) {
       .then(setData)
   }, [dataURI])
 
-  const [claimed, setClaimed] = useState()
+  const [received, setReceived] = useState()
   const [userData, setUserData] = useState()
   useEffect(()=>{
-    connectedAccount ? api.call('claimed', id, connectedAccount).toPromise().then(setClaimed) : setClaimed()
+    connectedAccount ? api.call('received', id, connectedAccount).toPromise().then(setReceived) : setReceived()
 
     data && Array.isArray(data.data) && setUserData(data.data.find(d=>d.address===connectedAccount))
 
@@ -154,13 +154,13 @@ function Distribution({distribution, username, selected, onSelect}) {
         {!data &&
           <Info.Alert style={{"margin-bottom": "10px"}}>Retrieving distribution data...</Info.Alert>
         }
-        {data && !userData && !claimed &&
+        {data && !userData && !received &&
           <Info.Alert style={{"margin-bottom": "10px"}}>Nothing to claim for {connectedAccount.slice(0,8)+'...'}</Info.Alert>
         }
-        {data && claimed &&
-          <Info style={{"margin-bottom": "10px"}}>No longer valid</Info>
+        {data && received &&
+          <Info style={{"margin-bottom": "10px"}}>You received from this distribution</Info>
         }
-        {!claimed && userData &&
+        {!received && userData &&
           <React.Fragment>
             <Info.Action style={{"margin-bottom": "10px"}}>You can claim <br/>{BigNumber(userData.amount).div("1e+18").toFixed()}</Info.Action>
             <Field>
