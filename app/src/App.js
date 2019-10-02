@@ -4,17 +4,26 @@ import { AppBar, AppView, Button, Checkbox, EmptyStateCard, Field, IconFundraisi
 import { Grid, Card, Content, Label } from './components'
 import { NULL_ADDRESS } from './utils'
 import csv from 'csvtojson'
-import merklizeDistribution from './merklizeDistribution'
+import merklize from './merklize'
 import ipfsClient from 'ipfs-http-client'
 import BigNumber from "bignumber.js"
-import manualMapping from './manualMapping';
 
 function App() {
-  const { api, network, appState, connectedAccount } = useAragonApi()
-  const { distributions } = appState
+  const { api, network, currentApp, appState, connectedAccount } = useAragonApi()
+  const { distributions, origin } = appState
 
   const [panelOpen, setPanelOpen] = useState(false)
   const [selected, setSelected] = useState({})
+  const [diff, setDiff] = useState()
+
+  useEffect(()=>{
+    if(!origin) return
+    console.log("origin", origin);
+    (async ()=>{
+      let cred = await (await fetch(`http://localhost:4000/cred?origin=${origin}`)).json()
+      console.log(cred)
+    })()
+  }, [origin])
 
   const emptyContainerStyles = {
     display: "flex",
@@ -57,23 +66,9 @@ function Merklize() {
     if(file){
       let reader = new FileReader()
       reader.onload = async (e)=>{
-        if(file.name.includes('.csv')){
-          let recipients = await csv().fromString(e.target.result)
-          let merklized = merklizeDistribution(file.name.replace('.csv', ''), recipients)
-          setData(merklized)
-        } else if(file.name.includes('.json')){
-          let addressToCred = JSON.parse(e.target.result)[1].credJSON.addressToCred
-          let recipients = []
-          for(key in Object.keys(addressToCred)){
-            for(name in Object.keys(manualMapping)){
-              if(key.includes(name)){
-                recipients.push(manualMapping[name],"cred",addressToCred[key][addressToCred[key].length-2])
-              }
-            }
-          }
-          let merklized = merklizeDistribution(file.name.replace('.json', ''), recipients)
-          setData(merklized)
-        }
+        let recipients = await csv().fromString(e.target.result)
+        let merklized = merklize(file.name.replace('.csv', ''), recipients)
+        setData(merklized)
       }
       reader.readAsText(file)
     } else {
