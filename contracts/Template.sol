@@ -60,7 +60,7 @@ contract Template is TemplateBase {
         tokenFactory = new MiniMeTokenFactory();
     }
 
-    function newInstance(string _airdropOrigin) public {
+    function newInstance(string _airdropSource) public {
         Kernel dao = fac.newDAO(this);
         ACL acl = ACL(dao.acl());
         acl.createPermission(this, dao, dao.APP_MANAGER_ROLE(), this);
@@ -78,7 +78,7 @@ contract Template is TemplateBase {
         // Initialize apps
         tokenManager.initialize(token, false, 0);
         emit InstalledApp(tokenManager, tokenManagerAppId);
-        airdrop.initialize(tokenManager, _airdropOrigin);
+        airdrop.initialize(tokenManager, _airdropSource);
         emit InstalledApp(airdrop, airdropAppId);
 
         acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), this);
@@ -86,7 +86,7 @@ contract Template is TemplateBase {
         tokenManager.mint(root, 10e18); // Give ten tokens to root
 
         acl.createPermission(root, airdrop, airdrop.START_ROLE(), root);
-        acl.createPermission(root, airdrop, airdrop.CHANGE_ORIGIN(), root);
+        acl.createPermission(root, airdrop, airdrop.CHANGE_SOURCE(), root);
 
         // Clean up permissions
 

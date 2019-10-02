@@ -23,11 +23,11 @@ contract Airdrop is AragonApp {
     /* mapping(address => uint) public lastClaimed; */
     TokenManager public tokenManager;
     uint public distributionsCount;
-    string public origin;
+    string public source;
 
     /// ACL
     bytes32 constant public START_ROLE = keccak256("START_ROLE");
-    bytes32 constant public CHANGE_ORIGIN = keccak256("CHANGE_ORIGIN");
+    bytes32 constant public CHANGE_SOURCE = keccak256("CHANGE_SOURCE");
 
     // Errors
     string private constant ERROR = "ERROR";
@@ -36,12 +36,12 @@ contract Airdrop is AragonApp {
     string private constant ERROR_INVALID = "INVALID";
 
     function initialize(
-      address _tokenManager, string _origin
+      address _tokenManager, string _source
     ) onlyInit public {
         initialized();
 
         tokenManager = TokenManager(_tokenManager);
-        origin = _origin;
+        source = _source;
     }
 
     /**
@@ -60,11 +60,11 @@ contract Airdrop is AragonApp {
     }
 
     /**
-     * @notice Set origin to `_origin`
-     * @param _origin New origin
+     * @notice Set source to `_source`
+     * @param _source New source
      */
-    function setOrigin(string _origin) auth(CHANGE_ORIGIN) public {
-        origin = _origin;
+    function setSource(string _source) auth(CHANGE_SOURCE) public {
+        source = _source;
     }
 
     /**

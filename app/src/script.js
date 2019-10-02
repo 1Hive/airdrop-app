@@ -29,7 +29,7 @@ api.store(
   },
   {
     init: async function(){
-      return { distributions: [], origin: await api.call('origin').toPromise() }
+      return { distributions: [], source: await api.call('source').toPromise() }
     }
   }
 )

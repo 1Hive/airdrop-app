@@ -9,10 +9,10 @@
       ]
     },
     {
-      "name": "Change origin",
-      "id": "CHANGE_ORIGIN",
+      "name": "Change source",
+      "id": "CHANGE_SOURCE",
       "params": [
-        "Origin"
+        "Source"
       ]
     }
   ],

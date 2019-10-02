@@ -8,6 +8,7 @@
 		"@aragon/apps-shared-minime": "^1.0.2",
 		"@aragon/apps-token-manager": "^2.1.0",
 		"@aragon/os": "^4.3.0",
+		"@aragon/templates-shared": "^1.0.0",
 		"@aragon/ui": "^0.40.2",
 		"bignumber.js": "^9.0.0",
 		"core-js": "^3.1.4",
@@ -33,7 +34,7 @@
 	},
 	"scripts": {
 		"start": "aragon run",
-		"start:template": "npm run start -- --template Template --template-init @ARAGON_ENS --template-args [\"@daonuts\"] --files dist",
+		"start:template": "npm run start -- --template Template --template-init @ARAGON_ENS --template-args @daonuts --files dist",
 		"start:http": "aragon run --http localhost:8001 --http-served-from ./dist",
 		"start:http:template": "npm run start:http -- --template Template --template-init @ARAGON_ENS",
 		"test": "aragon contracts test",

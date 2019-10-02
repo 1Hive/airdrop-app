@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useAragonApi } from '@aragon/api-react'
-import { AppBar, AppView, Button, Checkbox, EmptyStateCard, Field, IconFundraising, Info, Main, SidePanel, Text, TextInput, theme } from '@aragon/ui'
+import { AppBar, AppView, Button, Checkbox, EmptyStateCard, Field, IconCheck, IconFundraising, Info, Main, Modal, SidePanel, Text, TextInput, theme } from '@aragon/ui'
 import { Grid, Card, Content, Label } from './components'
-import { NULL_ADDRESS } from './utils'
+import { collateCred, NULL_ADDRESS } from './utils'
 import csv from 'csvtojson'
 import merklize from './merklize'
 import ipfsClient from 'ipfs-http-client'
@@ -10,20 +10,25 @@ import BigNumber from "bignumber.js"
 
 function App() {
   const { api, network, currentApp, appState, connectedAccount } = useAragonApi()
-  const { distributions, origin } = appState
+  // const { appAddress, kernelAddress } = currentApp
+  const { distributions, source } = appState
 
   const [panelOpen, setPanelOpen] = useState(false)
+  const [diffModalOpened, setDiffModalOpened] = useState(false)
   const [selected, setSelected] = useState({})
   const [diff, setDiff] = useState()
 
   useEffect(()=>{
-    if(!origin) return
-    console.log("origin", origin);
+    console.log("source", source);
+    console.log("currentApp", currentApp);
+    if(!currentApp || !source) return
     (async ()=>{
-      let cred = await (await fetch(`http://localhost:4000/cred?origin=${origin}`)).json()
-      console.log(cred)
+      let cred = await (await fetch(`http://localhost:4000/cred?dao=${currentApp.kernelAddress}&target=${source}`)).json()
+      setDiff(cred)
+      console.log("root", cred.data.root)
+      console.log("hash", cred.hash)
     })()
-  }, [origin])
+  }, [currentApp, source])
 
   const emptyContainerStyles = {
     display: "flex",
@@ -35,20 +40,31 @@ function App() {
   return (
     <Main>
       <AppView appBar={<AppBar title="Distribution" endContent={<Button mode="strong" onClick={()=>setPanelOpen(true)}>New distribution</Button>} />} >
-        { distributions.length ?
-          <React.Fragment>
-            <Text size="xlarge">Distributions:</Text>
-            <Grid>{distributions.map((d, i)=><Distribution distribution={d} selected={!!selected[d.id]} onSelect={(state, args)=>{if(state) selected[d.id]=args; else delete selected[d.id]; setSelected({...selected})}} />)}</Grid>
-          </React.Fragment> :
-          <div style={emptyContainerStyles}>
-            <EmptyStateCard
-              actionText="Create distribution"
-              onActivate={()=>setPanelOpen(true)}
-              text="There are no distributions."
-              icon={() => <IconFundraising color="green" />}
-            />
-          </div>
-        }
+        <Text>cred source: {source}</Text>
+        {diff &&
+        <Info background={theme.positive} icon={<IconCheck color="blue" />} title="New airdrop ready" size="mini">
+          New source data is available and ready to airdrop. <Button onClick={() => setDiffModalOpened(true)}>View</Button>
+        </Info>}
+        <Modal visible={diffModalOpened} onClose={() => setDiffModalOpened(false)}>
+          {JSON.stringify(diff)}
+          <Button onClick={() => setDiffModalOpened(false)}>
+            Close modal
+          </Button>
+        </Modal>
+        {diff && <Button mode="strong" onClick={()=>api.start(diff.data.root, `ipfs:${diff.hash}`).toPromise()}>Start Airdrop</Button>}
+        {distributions.length ?
+        <React.Fragment>
+          <Text size="xlarge">Distributions:</Text>
+          <Grid>{distributions.map((d, i)=><Distribution distribution={d} selected={!!selected[d.id]} onSelect={(state, args)=>{if(state) selected[d.id]=args; else delete selected[d.id]; setSelected({...selected})}} />)}</Grid>
+        </React.Fragment> :
+        <div style={emptyContainerStyles}>
+          <EmptyStateCard
+            actionText="Create distribution"
+            onActivate={()=>setPanelOpen(true)}
+            text="There are no distributions."
+            icon={() => <IconFundraising color="green" />}
+          />
+        </div>}
       </AppView>
       <SidePanel title={"New Distribution"} opened={panelOpen} onClose={()=>setPanelOpen(false)}>
         <Merklize />
@@ -136,7 +152,7 @@ function Distribution({distribution, username, selected, onSelect}) {
   useEffect(()=>{
     connectedAccount ? api.call('received', id, connectedAccount).toPromise().then(setReceived) : setReceived()
 
-    data && Array.isArray(data.data) && setUserData(data.data.find(d=>d.address===connectedAccount))
+    data && Array.isArray(data.recipients) && setUserData(data.recipients.find(d=>d.address===connectedAccount))
 
   }, [data, distribution, connectedAccount])
 
@@ -147,43 +163,20 @@ function Distribution({distribution, username, selected, onSelect}) {
           <Text color={theme.textTertiary}>#{id} </Text>
         </Label>
         {!data &&
-          <Info.Alert style={{"margin-bottom": "10px"}}>Retrieving distribution data...</Info.Alert>
-        }
+          <Info.Alert style={{"margin-bottom": "10px"}}>Retrieving distribution data...</Info.Alert>}
         {data && !userData && !received &&
-          <Info.Alert style={{"margin-bottom": "10px"}}>Nothing to claim for {connectedAccount.slice(0,8)+'...'}</Info.Alert>
-        }
+          <Info.Alert style={{"margin-bottom": "10px"}}>Nothing to claim for {connectedAccount.slice(0,8)+'...'}</Info.Alert>}
         {data && received &&
-          <Info style={{"margin-bottom": "10px"}}>You received from this distribution</Info>
-        }
+          <Info style={{"margin-bottom": "10px"}}>You received from this distribution</Info>}
         {!received && userData &&
           <React.Fragment>
             <Info.Action style={{"margin-bottom": "10px"}}>You can claim <br/>{BigNumber(userData.amount).div("1e+18").toFixed()}</Info.Action>
             <Field>
               <Button mode="strong" emphasis="positive" onClick={async () => {console.log(id, connectedAccount, BigNumber(userData.amount).toFixed(), userData.proof); await api.award(id, connectedAccount, BigNumber(userData.amount).toFixed(), userData.proof).toPromise()}}>Claim</Button>
             </Field>
-          </React.Fragment>
-        }
+          </React.Fragment>}
       </Content>
     </Card>
-  )
-}
-
-function NewDistribution(){
-  const { api, connectedAccount } = useAragonApi()
-  const [newRoot, setNewRoot] = useState('0x5609d105d857abed30fff2bfd4dfd572c6115a4437b99d631b8e1c0c5bd79bb0')
-  const [newIPFSHash, setNewIPFSHash] = useState('QmY4uJQHBWZx5T9RXMtogHjaVQoWb3KjCFr3k4ivdQawJw')
-  return (
-    <React.Fragment>
-      <Field label="Merkle root:">
-        <TextInput value={newRoot} onChange={(e)=>setNewRoot(e.target.value)} />
-      </Field>
-      <Field label="IPFS Content Hash:">
-        <TextInput value={newIPFSHash} onChange={(e)=>setNewIPFSHash(e.target.value)} />
-      </Field>
-      <Field>
-        <Button onClick={()=>api.start(newRoot, `ipfs:${newIPFSHash}`)}>Start</Button>
-      </Field>
-    </React.Fragment>
   )
 }
 
