@@ -38,7 +38,7 @@ function AwardsTable({awards}){
     <Table header={<TableRow><TableHeader title="Awards" /></TableRow>}>
       <TableRow>
         <TableCell>
-          <Text>Recipient Name</Text>
+          <Text>Recipient</Text>
         </TableCell>
         <TableCell>
           <Text>Amount</Text>
