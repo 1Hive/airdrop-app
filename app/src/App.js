@@ -14,8 +14,6 @@ function App() {
   const { api, network, appState, connectedAccount } = useAragonApi()
   const { count, rawAirdrops = [], awarded, syncing } = appState
 
-  const [panelOpen, setPanelOpen] = useState(false)
-
   const [airdrops, setAirdrops] = useState([])
   useEffect(()=>{
     if(!rawAirdrops || !rawAirdrops.length) return
@@ -29,17 +27,18 @@ function App() {
   }, [rawAirdrops, connectedAccount])
 
   const [selected, setSelected] = useState()
+  const [wizard, setWizard] = useState(false)
+  const [screen, setScreen] = useState()
 
   return (
     <Main>
-      <Header primary="Airdrop" secondary={!selected && <Button mode="strong" onClick={()=>setPanelOpen(true)}>New airdrop</Button>} />
-      {selected
-        ? <AirdropDetail airdrop={selected} onBack={()=>setSelected()} />
-        : <Airdrops airdrops={airdrops} onSelect={setSelected} />
+      <Header primary="Airdrop" secondary={!selected && !wizard && <Button mode="strong" onClick={()=>setWizard(true)}>New airdrop</Button>} />
+      { wizard
+        ? <NewAirdrop onBack={()=>setWizard()} />
+        : selected
+          ? <AirdropDetail airdrop={selected} onBack={()=>setSelected()} />
+          : <Airdrops airdrops={airdrops} onSelect={setSelected} />
       }
-      <SidePanel title={"New Airdrop"} opened={panelOpen} onClose={()=>setPanelOpen(false)}>
-        <NewAirdrop />
-      </SidePanel>
     </Main>
   )
 }

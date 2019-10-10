@@ -4587,7 +4587,7 @@ ethereumjs-tx@1.3.7, ethereumjs-tx@^1.1.0, ethereumjs-tx@^1.1.1, ethereumjs-tx@^
     ethereum-common "^0.0.18"
     ethereumjs-util "^5.0.0"
 
-ethereumjs-util@6.1.0, ethereumjs-util@^6.0.0:
+ethereumjs-util@6.1.0, ethereumjs-util@^6.0.0, ethereumjs-util@^6.1.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-6.1.0.tgz#e9c51e5549e8ebd757a339cc00f5380507e799c8"
   integrity sha512-URESKMFbDeJxnAxPppnk2fN6Y3BIatn9fwn76Lm8bQlt+s52TpG8dN9M66MLPuRAiAOIqL3dfwqWJf0sd0fL0Q==
@@ -8032,14 +8032,13 @@ merkle-patricia-tree@2.3.2, merkle-patricia-tree@^2.1.2, merkle-patricia-tree@^2
     rlp "^2.0.0"
     semaphore ">=1.0.1"
 
-merkle-tree-solidity@^1.0.8:
+merkle-tree-solidity@daonuts/merkle-tree-solidity#master:
   version "1.0.8"
-  resolved "https://registry.yarnpkg.com/merkle-tree-solidity/-/merkle-tree-solidity-1.0.8.tgz#c4dc7bdad03270ca16c72cadc8b0e616dfc3a77a"
-  integrity sha1-xNx72tAycMoWxyytyLDmFt/Dp3o=
+  resolved "https://codeload.github.com/daonuts/merkle-tree-solidity/tar.gz/d921f7079c8544985f6129abb905e545bedae954"
   dependencies:
     es6-promisify "^5.0.0"
     ether-pudding "^3.2.0"
-    ethereumjs-util "^5.1.1"
+    ethereumjs-util "^6.1.0"
     ethjs-contract "^0.1.7"
     ethjs-provider-http "^0.1.4"
     ethjs-query "^0.2.1"

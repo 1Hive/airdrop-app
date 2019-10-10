@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAragonApi } from '@aragon/api-react'
 import {
-  AppBar, AppView, BackButton, Bar, Button, Card, CardLayout, Checkbox, Field, GU, Header, IconSettings,
+  AddressField, AppBar, AppView, BackButton, Bar, Button, Card, CardLayout, Checkbox, Field, GU, Header, IconSettings,
   Info, Main, Modal, SidePanel, Table, TableCell, TableHeader, TableRow, Text, TextInput, theme
 } from '@aragon/ui'
 const NULL_ADDRESS = "0x0000000000000000000000000000000000000000"
@@ -46,7 +46,7 @@ function AwardsTable({awards}){
       </TableRow>
       {awards.map((award,idx)=>(
         <TableRow key={idx}>
-          <TableCell><Text>{award.address}</Text></TableCell>
+          <TableCell><AddressField address={award.address} /></TableCell>
           <TableCell><Text>{award.amount}</Text></TableCell>
         </TableRow>
       ))}

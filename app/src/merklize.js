@@ -1,15 +1,13 @@
 const MerkleTree = require("merkle-tree-solidity").default
-const utils = require("ethereumjs-util")
-const setLengthLeft = utils.setLengthLeft
-const setLengthRight = utils.setLengthRight
+const { bufferToHex, keccak256, setLengthLeft, setLengthRight, toBuffer } = require("ethereumjs-util")
 const csv = require('csvtojson')
 const BigNumber = require('bignumber.js')
 
 const decimals = BigNumber(10).pow(18)
 
-module.exports = function(data, amountField, include) {
+module.exports = function(data, addressField, amountField, include) {
   const awards = data.reduce((prev, curr)=>{
-    const address = curr.address
+    const address = curr[addressField]
     const existing = prev.find(u=>u.address===address)
     const amount = BigNumber(curr[amountField])
     if(existing) existing.amount = existing.amount ? existing.amount.plus(amount) : amount
@@ -23,10 +21,10 @@ module.exports = function(data, amountField, include) {
 
   const awardHashBuffers = awards.map(r=>{
     r.amount = r.amount.times(decimals)
-    const addressBuffer = utils.toBuffer(r.address)
-    const amountBuffer = setLengthLeft(utils.toBuffer("0x"+r.amount.toString(16)), 32)
-    const hashBuffer = utils.keccak256(Buffer.concat([addressBuffer, amountBuffer]))
-    const hash = utils.bufferToHex(hashBuffer)
+    const addressBuffer = toBuffer(r.address)
+    const amountBuffer = setLengthLeft(toBuffer("0x"+r.amount.toString(16)), 32)
+    const hashBuffer = keccak256(Buffer.concat([addressBuffer, amountBuffer]))
+    const hash = bufferToHex(hashBuffer)
     r.amount = r.amount.toFixed()
 
     return hashBuffer
@@ -34,10 +32,10 @@ module.exports = function(data, amountField, include) {
 
   const merkleTree = new MerkleTree(awardHashBuffers)
 
-  const root = utils.bufferToHex(merkleTree.getRoot())
+  const root = bufferToHex(merkleTree.getRoot())
 
   awards.forEach((award,idx)=>{
-    award.proof = merkleTree.getProof(awardHashBuffers[idx]).map(p=>utils.bufferToHex(p))
+    award.proof = merkleTree.getProof(awardHashBuffers[idx]).map(p=>bufferToHex(p))
     return award
   })
 
