@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useAragonApi } from '@aragon/api-react'
-import { AppBar, AppView, Button, Checkbox, EmptyStateCard, Field, IconCheck, IconFundraising, Info, Main, Modal, SidePanel, Text, TextInput, theme } from '@aragon/ui'
+import {
+  AppBar, AppView, Button, Checkbox, EmptyStateCard, Field, IconCheck, IconFundraising,
+  Info, Main, Modal, SidePanel, Table, TableHeader, TableRow, TableCell, Text, TextInput, theme
+} from '@aragon/ui'
 import { Grid, Card, Content, Label } from './components'
 import { collateCred, NULL_ADDRESS } from './utils'
 import csv from 'csvtojson'
@@ -42,11 +45,11 @@ function App() {
       <AppView appBar={<AppBar title="Distribution" endContent={<Button mode="strong" onClick={()=>setPanelOpen(true)}>New distribution</Button>} />} >
         <Text>cred source: {source}</Text>
         {diff &&
-        <Info background={theme.positive} icon={<IconCheck color="blue" />} title="New airdrop ready" size="mini">
-          New source data is available and ready to airdrop. <Button onClick={() => setDiffModalOpened(true)}>View</Button>
-        </Info>}
+        <Info.Action background={theme.positive} title="New airdrop ready">
+          New source data is available and ready to airdrop. <Button style={{marginLeft: "1em"}} size="mini" onClick={() => setDiffModalOpened(true)}>View</Button>
+        </Info.Action>}
         <Modal visible={diffModalOpened} onClose={() => setDiffModalOpened(false)}>
-          {JSON.stringify(diff)}
+          <DiffTableView {...diff.data} hash={diff.hash} />
           <Button onClick={() => setDiffModalOpened(false)}>
             Close modal
           </Button>
@@ -70,6 +73,31 @@ function App() {
         <Merklize />
       </SidePanel>
     </Main>
+  )
+}
+
+function DiffTableView({hash, root, recipients, interval, supplement}){
+  return (
+    <Table header={<TableRow><TableHeader title="Cred" /></TableRow>}>
+      <TableRow>
+        <TableCell>
+          <Text weight="bold">address</Text>
+        </TableCell>
+        <TableCell>
+          <Text weight="bold">amount</Text>
+        </TableCell>
+      </TableRow>
+      {recipients.map(r=>(
+        <TableRow>
+          <TableCell>
+            <Text>{r.address}</Text>
+          </TableCell>
+          <TableCell>
+            <Text>{r.amount}</Text>
+          </TableCell>
+        </TableRow>
+      ))}
+    </Table>
   )
 }
 

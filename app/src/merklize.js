@@ -12,7 +12,7 @@ module.exports = function(id, recipients, start, end) {
     let address = curr.address
     let existing = prev.find(u=>u.address===address)
     let amount = BigNumber(curr.points)
-    if(existing && existing.amount) existing.amount = existing.amount.add(amount)
+    if(existing && existing.amount) existing.amount = existing.amount.plus(amount)
     else prev.push({address,amount})
     return prev
   }, [])
