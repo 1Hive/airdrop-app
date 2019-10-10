@@ -3,3 +3,4 @@ dist/
 build/
 scratch/
 package-lock.json
+.cache
