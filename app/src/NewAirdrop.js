@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { useAragonApi } from '@aragon/api-react'
 import {
-  AppBar, AppView, BackButton, Bar, Button, Card, CardLayout, Checkbox, Field, GU, Header, IconSettings,
+  AppBar, AppView, BackButton, Bar, Button, Card, CardLayout, Checkbox, DropDown, Field, GU, Header, IconSettings,
   Info, Main, Modal, Radio, RadioGroup, SidePanel, Text, TextInput, theme
 } from '@aragon/ui'
+import AwardsView from './AwardsView'
 import BigNumber from 'bignumber.js'
 import merklize from './merklize'
 import ipfsClient from 'ipfs-http-client'
 import csv from 'csvtojson'
 import { isValidAddress } from 'ethereumjs-util'
+import { getPublicAddress as getPublicAddressTorus } from './torusUtils'
 
 function NewAirdrop({onBack}) {
   const { api } = useAragonApi()
@@ -42,7 +44,7 @@ function NewAirdrop({onBack}) {
   }, [files])
 
   useEffect(()=>{
-    if(!addressField || !amountField) return
+    if(!raw || !addressField || !amountField) return
     setData( merklize(raw, addressField, amountField) )
   }, [raw, addressField, amountField])
 
@@ -50,11 +52,24 @@ function NewAirdrop({onBack}) {
     if(!data) return setHash()
     addToIPFS(data).then(setHash)
   }, [data])
-  //
-  // useEffect(()=>{
-  //   if(!hash) return
-  //   api.start(data.root, `ipfs:${hash}`).toPromise().then(console.log)
-  // }, [hash])
+
+  const [changeFields, setChangeFields] = useState(false)
+  const [viewData, setViewData] = useState(false)
+  const [doingLookup, setDoingLookup] = useState(false)
+  const [count, setCount] = useState(0)
+  const [activeProviderIdx, setActiveProviderIdx] = useState(0)
+  const providerActions = {
+    "torus:reddit": async (raw)=>{
+      setDoingLookup(true)
+      for (let i=0;i<raw.length;i++){
+        raw[i].address = await getPublicAddressTorus({verifier:"reddit", verifierId: raw[i].username.replace("u/", "")})
+        setCount(i+1)
+      }
+      setAddressField("address")
+      setDoingLookup(false)
+    }
+  }
+  const providers = Object.keys(providerActions)
 
   return (
     <React.Fragment>
@@ -65,25 +80,48 @@ function NewAirdrop({onBack}) {
       <form ref={form} onSubmit={null}>
         <Field label="Load from csv:">
           <input type="file" onChange={(e)=>setFiles(e.target.files)} />
+          {!!files && <Button onClick={()=>setFiles()}>Clear</Button>}
         </Field>
         {raw && raw[0] &&
-          <React.Fragment>
-            <Field label="Address column name:">
-              <RadioGroup onChange={(e)=>setAddressField(e.target.value)} selected={addressField}>
-                {Object.keys(raw[0]).map((label, i) => <label key={i}><Radio id={label} /> {label}</label>)}
-              </RadioGroup>
-            </Field>
-            <Field label="Amount column name:">
-              <RadioGroup onChange={(e)=>setAmountField(e.target.value)} selected={amountField}>
-                {Object.keys(raw[0]).map((label, i) => <label key={i}><Radio id={label} /> {label}</label>)}
-              </RadioGroup>
-            </Field>
-          </React.Fragment>}
+        <Info style={{marginBottom: "10px"}}>
+          Found address column ({addressField || "unknown"}) <br/>
+          Found amount column ({amountField}) <br/>
+          <Button size="mini" onClick={()=>setChangeFields(true)}>Change this</Button>
+        </Info>}
+        {raw && raw[0] && changeFields &&
+        <React.Fragment>
+          <Field label="Address column:">
+            <RadioGroup onChange={(field)=>setAddressField(field)} selected={addressField}>
+              {Object.keys(raw[0]).map((field, i) => <label key={i}><Radio id={field} /> {field}</label>)}
+            </RadioGroup>
+          </Field>
+          <Field label="Amount column:">
+            <RadioGroup onChange={(field)=>setAmountField(field)} selected={amountField}>
+              {Object.keys(raw[0]).map((field, i) => <label key={i}><Radio id={field} /> {field}</label>)}
+            </RadioGroup>
+          </Field>
+        </React.Fragment>}
       </form>
+      {raw && !addressField &&
       <Field>
-        <Button onClick={()=>setFiles()}>Clear</Button>
-        {data && data.root && hash && <Button mode="strong" onClick={()=>api.start(data.root, `ipfs:${hash}`).toPromise()}>Submit</Button>}
-      </Field>
+        <Info.Alert style={{marginBottom: "10px"}}>No address field detected. You can lookup addresses from a username field using the following providers:</Info.Alert>
+        <DropDown style={{marginRight: "1em"}} items={providers} selected={activeProviderIdx} onChange={(idx)=>setActiveProviderIdx(idx)} />
+        <Button onClick={()=>providerActions[providers[activeProviderIdx]](raw)}>Go</Button>
+      </Field>}
+      {doingLookup &&
+      <Field>
+        <Info style={{marginBottom: "10px"}}>Please wait for the address lookups to complete. {raw.length - count} left.</Info>
+      </Field>}
+      {data && data.root && hash &&
+      <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+        <Field>
+          <Button onClick={()=>setViewData(true)}>View data</Button>
+        </Field>
+        <Field>
+          <Button mode="strong" onClick={()=>api.start(data.root, `ipfs:${hash}`).toPromise()}>Submit</Button>
+        </Field>
+      </div>}
+      {viewData && data && <AwardsView root={data.root} ipfsHash={hash} awards={data.awards} />}
     </React.Fragment>
   )
 }

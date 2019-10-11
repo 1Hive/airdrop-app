@@ -44,22 +44,17 @@ function AirdropCard({airdrop, onSelect}) {
       </header>
       <section>
         {!awarded && !data &&
-          <Info.Alert style={{marginBottom: "10px"}}>Retrieving airdrop data...</Info.Alert>
-        }
+        <Info.Alert style={{marginBottom: "10px"}}>Retrieving airdrop data...</Info.Alert>}
         {data && !userData &&
-          <Info.Alert style={{marginBottom: "10px"}}>Nothing to claim</Info.Alert>
-        }
+        <Info.Alert style={{marginBottom: "10px"}}>Nothing to claim</Info.Alert>}
         {awarded &&
-          <Info style={{marginBottom: "10px"}}>You were awarded</Info>
-        }
+        <Info style={{marginBottom: "10px"}}>You were awarded</Info>}
         {!awarded && userData &&
-          <Info.Action style={{marginBottom: "10px"}}>You can claim <br/>{BigNumber(userData.amount).div("1e+18").toFixed()}</Info.Action>
-        }
+        <Info.Action style={{marginBottom: "10px"}}>You can claim <br/>{BigNumber(userData.amount).div("1e+18").toFixed()}</Info.Action>}
       </section>
       <footer style={{display: "flex", justifyContent: "flex-end"}}>
         {!awarded && userData &&
-          <Button mode="strong" emphasis="positive" onClick={(e)=>{e.stopPropagation();api.award(id, connectedAccount, userData.amount, userData.proof).toPromise()}}>Claim</Button>
-        }
+        <Button mode="strong" emphasis="positive" onClick={(e)=>{e.stopPropagation();api.award(id, connectedAccount, userData.amount, userData.proof).toPromise()}}>Claim</Button>}
       </footer>
     </Card>
   )

@@ -4,6 +4,7 @@ import {
   AddressField, AppBar, AppView, BackButton, Bar, Button, Card, CardLayout, Checkbox, Field, GU, Header, IconSettings,
   Info, Main, Modal, SidePanel, Table, TableCell, TableHeader, TableRow, Text, TextInput, theme
 } from '@aragon/ui'
+import AwardsView from './AwardsView'
 const NULL_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 function Airdrop({airdrop, onBack}){
@@ -27,30 +28,9 @@ function Airdrop({airdrop, onBack}){
           </Field>
         </React.Fragment>}
       <section>
-        {data && <AwardsTable awards={data.awards} />}
+        {data && <AwardsView awards={data.awards} />}
       </section>
     </React.Fragment>
-  )
-}
-
-function AwardsTable({awards}){
-  return (
-    <Table header={<TableRow><TableHeader title="Awards" /></TableRow>}>
-      <TableRow>
-        <TableCell>
-          <Text>Recipient</Text>
-        </TableCell>
-        <TableCell>
-          <Text>Amount</Text>
-        </TableCell>
-      </TableRow>
-      {awards.map((award,idx)=>(
-        <TableRow key={idx}>
-          <TableCell><AddressField address={award.address} /></TableCell>
-          <TableCell><Text>{award.amount}</Text></TableCell>
-        </TableRow>
-      ))}
-    </Table>
   )
 }
 

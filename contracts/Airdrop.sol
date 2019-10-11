@@ -58,7 +58,7 @@ contract Airdrop is AragonApp {
     function award(uint _id, address _recipient, uint256 _amount, bytes32[] _proof) public {
         Airdrop storage airdrop = airdrops[_id];
 
-        bytes32 hash = keccak256(_recipient, _amount);
+        bytes32 hash = keccak256(abi.encodePacked(_recipient, _amount));
         require( validate(airdrop.root, _proof, hash), ERROR_INVALID );
 
         require( !airdrops[_id].awarded[_recipient], ERROR_AWARDED );
@@ -89,7 +89,7 @@ contract Airdrop is AragonApp {
             bytes32[] memory proof = extractProof(_proofs, marker, _proofLengths[i]);
             marker += _proofLengths[i]*32;
 
-            bytes32 hash = keccak256(_recipient, _amounts[i]);
+            bytes32 hash = keccak256(abi.encodePacked(_recipient, _amounts[i]));
             require( validate(airdrops[id].root, proof, hash), ERROR_INVALID );
 
             require( !airdrops[id].awarded[_recipient], ERROR_AWARDED );
@@ -129,7 +129,7 @@ contract Airdrop is AragonApp {
             bytes32[] memory proof = extractProof(_proofs, marker, _proofLengths[i]);
             marker += _proofLengths[i]*32;
 
-            bytes32 hash = keccak256(recipient, _amounts[i]);
+            bytes32 hash = keccak256(abi.encodePacked(recipient, _amounts[i]));
             if( !validate(airdrops[_id].root, proof, hash) )
                 continue;
 
@@ -159,9 +159,9 @@ contract Airdrop is AragonApp {
 
         for (uint i = 0; i < proof.length; i++) {
             if (hash < proof[i]) {
-                hash = keccak256(hash, proof[i]);
+                hash = keccak256(abi.encodePacked(hash, proof[i]));
             } else {
-                hash = keccak256(proof[i], hash);
+                hash = keccak256(abi.encodePacked(proof[i], hash));
             }
         }
 
