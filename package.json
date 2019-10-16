@@ -47,6 +47,7 @@
 		"publish:patch": "aragon apm publish patch --files dist --skip-confirmation",
 		"publish:minor": "aragon apm publish minor --files dist --skip-confirmation",
 		"publish:major": "aragon apm publish major --files dist --skip-confirmation",
+		"deploy:template": "aragon deploy Template --init @ARAGON_ENS",
 		"versions": "aragon apm versions",
 		"clean": "rm -rf build && rm -rf dist"
 	},

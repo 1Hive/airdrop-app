@@ -17,6 +17,7 @@ import "@aragon/os/contracts/lib/ens/PublicResolver.sol";
 import "@aragon/os/contracts/apm/APMNamehash.sol";
 
 import "@aragon/apps-token-manager/contracts/TokenManager.sol";
+import "@aragon/apps-voting/contracts/Voting.sol";
 import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
 
 import "./Airdrop.sol";
@@ -60,46 +61,56 @@ contract Template is TemplateBase {
         tokenFactory = new MiniMeTokenFactory();
     }
 
-    function newInstance() public {
+    function newInstance(address[] _holders) public {
         Kernel dao = fac.newDAO(this);
         ACL acl = ACL(dao.acl());
         acl.createPermission(this, dao, dao.APP_MANAGER_ROLE(), this);
 
         address root = msg.sender;
         bytes32 airdropAppId = keccak256(abi.encodePacked(apmNamehash("open"), keccak256("airdrop-app")));
+        bytes32 votingAppId = apmNamehash("voting");
         bytes32 tokenManagerAppId = apmNamehash("token-manager");
 
         Airdrop airdrop = Airdrop(dao.newAppInstance(airdropAppId, latestVersionAppBase(airdropAppId)));
+        Voting voting = Voting(dao.newAppInstance(votingAppId, latestVersionAppBase(votingAppId)));
         TokenManager tokenManager = TokenManager(dao.newAppInstance(tokenManagerAppId, latestVersionAppBase(tokenManagerAppId)));
 
-        MiniMeToken token = tokenFactory.createCloneToken(MiniMeToken(0), 0, "Token", 18, "CRED", false);
+        MiniMeToken token = tokenFactory.createCloneToken(MiniMeToken(0), 0, "Guardian", 18, "GUARD", false);
         token.changeController(tokenManager);
 
         // Initialize apps
         tokenManager.initialize(token, false, 0);
         emit InstalledApp(tokenManager, tokenManagerAppId);
+        voting.initialize(token, uint64(60*10**16), uint64(15*10**16), uint64(1 days));
+        emit InstalledApp(voting, votingAppId);
         airdrop.initialize(tokenManager);
         emit InstalledApp(airdrop, airdropAppId);
 
-        acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), this);
-        acl.createPermission(airdrop, tokenManager, tokenManager.BURN_ROLE(), root);
-        tokenManager.mint(root, 10e18); // Give ten tokens to root
+        acl.createPermission(voting, voting, voting.MODIFY_SUPPORT_ROLE(), voting);
+        acl.createPermission(voting, voting, voting.MODIFY_QUORUM_ROLE(), voting);
+        acl.createPermission(token, voting, voting.CREATE_VOTES_ROLE(), voting);
 
-        acl.createPermission(root, airdrop, airdrop.START_ROLE(), root);
+        acl.createPermission(voting, tokenManager, tokenManager.BURN_ROLE(), voting);
+        acl.createPermission(voting, airdrop, airdrop.START_ROLE(), voting);
+        acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), voting);
+
+        for (uint i=0; i<_holders.length; i++) {
+            tokenManager.mint(_holders[i], 1e18); // Give 1 token to each holder
+        }
 
         // Clean up permissions
 
-        acl.grantPermission(root, dao, dao.APP_MANAGER_ROLE());
-        acl.revokePermission(this, dao, dao.APP_MANAGER_ROLE());
-        acl.setPermissionManager(root, dao, dao.APP_MANAGER_ROLE());
-
-        acl.grantPermission(root, acl, acl.CREATE_PERMISSIONS_ROLE());
-        acl.revokePermission(this, acl, acl.CREATE_PERMISSIONS_ROLE());
-        acl.setPermissionManager(root, acl, acl.CREATE_PERMISSIONS_ROLE());
-
-        acl.revokePermission(this, tokenManager, tokenManager.MINT_ROLE());
         acl.grantPermission(airdrop, tokenManager, tokenManager.MINT_ROLE());
-        acl.setPermissionManager(root, tokenManager, tokenManager.MINT_ROLE());
+        acl.revokePermission(this, tokenManager, tokenManager.MINT_ROLE());
+        acl.setPermissionManager(voting, tokenManager, tokenManager.MINT_ROLE());
+
+        acl.grantPermission(voting, dao, dao.APP_MANAGER_ROLE());
+        acl.revokePermission(this, dao, dao.APP_MANAGER_ROLE());
+        acl.setPermissionManager(voting, dao, dao.APP_MANAGER_ROLE());
+
+        acl.grantPermission(voting, acl, acl.CREATE_PERMISSIONS_ROLE());
+        acl.revokePermission(this, acl, acl.CREATE_PERMISSIONS_ROLE());
+        acl.setPermissionManager(voting, acl, acl.CREATE_PERMISSIONS_ROLE());
 
         emit DeployDao(dao);
     }
