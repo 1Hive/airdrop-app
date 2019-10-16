@@ -62,6 +62,7 @@ contract Template is TemplateBase {
     }
 
     function newInstance(address[] _holders) public {
+    /* function newInstance() public { */
         Kernel dao = fac.newDAO(this);
         ACL acl = ACL(dao.acl());
         acl.createPermission(this, dao, dao.APP_MANAGER_ROLE(), this);
@@ -86,13 +87,13 @@ contract Template is TemplateBase {
         airdrop.initialize(tokenManager);
         emit InstalledApp(airdrop, airdropAppId);
 
-        acl.createPermission(voting, voting, voting.MODIFY_SUPPORT_ROLE(), voting);
-        acl.createPermission(voting, voting, voting.MODIFY_QUORUM_ROLE(), voting);
-        acl.createPermission(token, voting, voting.CREATE_VOTES_ROLE(), voting);
+        /* acl.createPermission(voting, voting, voting.MODIFY_SUPPORT_ROLE(), voting); */
+        /* acl.createPermission(voting, voting, voting.MODIFY_QUORUM_ROLE(), voting); */
+        acl.createPermission(tokenManager, voting, voting.CREATE_VOTES_ROLE(), voting);
 
         acl.createPermission(voting, tokenManager, tokenManager.BURN_ROLE(), voting);
         acl.createPermission(voting, airdrop, airdrop.START_ROLE(), voting);
-        acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), voting);
+        acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), this);
 
         for (uint i=0; i<_holders.length; i++) {
             tokenManager.mint(_holders[i], 1e18); // Give 1 token to each holder
