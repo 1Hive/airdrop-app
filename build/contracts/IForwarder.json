@@ -1,0 +1,593 @@
+{
+  "contractName": "IForwarder",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isForwarder",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "name": "evmCallScript",
+          "type": "bytes"
+        }
+      ],
+      "name": "canForward",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "evmCallScript",
+          "type": "bytes"
+        }
+      ],
+      "name": "forward",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "/*\n * SPDX-License-Identitifer:    MIT\n */\n\npragma solidity ^0.4.24;\n\n\ninterface IForwarder {\n    function isForwarder() external pure returns (bool);\n\n    // TODO: this should be external\n    // See https://github.com/ethereum/solidity/issues/4832\n    function canForward(address sender, bytes evmCallScript) public view returns (bool);\n\n    // TODO: this should be external\n    // See https://github.com/ethereum/solidity/issues/4832\n    function forward(bytes evmCallScript) public;\n}\n",
+  "sourcePath": "@aragon/os/contracts/common/IForwarder.sol",
+  "ast": {
+    "absolutePath": "@aragon/os/contracts/common/IForwarder.sol",
+    "exportedSymbols": {
+      "IForwarder": [
+        6867
+      ]
+    },
+    "id": 6868,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6847,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "44:24:23"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 6867,
+        "linearizedBaseContracts": [
+          6867
+        ],
+        "name": "IForwarder",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "id": 6852,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "isForwarder",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6848,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "118:2:23"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 6851,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6850,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6852,
+                  "src": "144:4:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 6849,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "144:4:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "143:6:23"
+            },
+            "scope": 6867,
+            "src": "98:52:23",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 6861,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "canForward",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6857,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6854,
+                  "name": "sender",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6861,
+                  "src": "273:14:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6853,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "273:7:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6856,
+                  "name": "evmCallScript",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6861,
+                  "src": "289:19:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6855,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "289:5:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "272:37:23"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 6860,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6859,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6861,
+                  "src": "331:4:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 6858,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "331:4:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "330:6:23"
+            },
+            "scope": 6867,
+            "src": "253:84:23",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 6866,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "forward",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6864,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6863,
+                  "name": "evmCallScript",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6866,
+                  "src": "457:19:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6862,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "457:5:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "456:21:23"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 6865,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "484:0:23"
+            },
+            "scope": 6867,
+            "src": "440:45:23",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 6868,
+        "src": "71:416:23"
+      }
+    ],
+    "src": "44:444:23"
+  },
+  "legacyAST": {
+    "absolutePath": "@aragon/os/contracts/common/IForwarder.sol",
+    "exportedSymbols": {
+      "IForwarder": [
+        6867
+      ]
+    },
+    "id": 6868,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6847,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "44:24:23"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 6867,
+        "linearizedBaseContracts": [
+          6867
+        ],
+        "name": "IForwarder",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "id": 6852,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "isForwarder",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6848,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "118:2:23"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 6851,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6850,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6852,
+                  "src": "144:4:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 6849,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "144:4:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "143:6:23"
+            },
+            "scope": 6867,
+            "src": "98:52:23",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 6861,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "canForward",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6857,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6854,
+                  "name": "sender",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6861,
+                  "src": "273:14:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6853,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "273:7:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6856,
+                  "name": "evmCallScript",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6861,
+                  "src": "289:19:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6855,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "289:5:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "272:37:23"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 6860,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6859,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6861,
+                  "src": "331:4:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 6858,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "331:4:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "330:6:23"
+            },
+            "scope": 6867,
+            "src": "253:84:23",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 6866,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "forward",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6864,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6863,
+                  "name": "evmCallScript",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6866,
+                  "src": "457:19:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6862,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "457:5:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "456:21:23"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 6865,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "484:0:23"
+            },
+            "scope": 6867,
+            "src": "440:45:23",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 6868,
+        "src": "71:416:23"
+      }
+    ],
+    "src": "44:444:23"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.1",
+  "updatedAt": "2019-10-17T03:55:13.260Z"
+}

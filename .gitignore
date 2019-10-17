@@ -1,6 +1,6 @@
 node_modules/
 dist/
-build/
+#build/
 scratch/
 package-lock.json
 .cache

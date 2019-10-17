@@ -90,7 +90,6 @@ contract Template is TemplateBase {
         /* acl.createPermission(voting, voting, voting.MODIFY_SUPPORT_ROLE(), voting); */
         /* acl.createPermission(voting, voting, voting.MODIFY_QUORUM_ROLE(), voting); */
         acl.createPermission(tokenManager, voting, voting.CREATE_VOTES_ROLE(), voting);
-
         acl.createPermission(voting, tokenManager, tokenManager.BURN_ROLE(), voting);
         acl.createPermission(voting, airdrop, airdrop.START_ROLE(), voting);
         acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), this);
