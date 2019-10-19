@@ -24,7 +24,7 @@ function Airdrop({airdrop, onBack}){
             <TextInput.Number value={batchSize} onChange={(e)=>setBatchSize(e.target.value)} />
           </Field>
           <Field>
-            <Button mode="strong" emphasis="positive" onClick={()=>awardToMany(api, id, data.awards)}>Award Many</Button>
+            <Button mode="strong" emphasis="positive" onClick={()=>awardToMany(api, id, data.awards, batchSize)}>Award Many</Button>
           </Field>
         </React.Fragment>}
       <section>
@@ -44,6 +44,7 @@ async function awardToMany(api, id, awards, batchSize){
   while (recipients.length < batchSize && idx < awards.length){
     let award = awards[idx]
     let awarded = await api.call('awarded', id, award.address).toPromise()
+    console.log("here", awarded)
     if(awarded)
       continue
 
