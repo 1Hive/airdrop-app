@@ -12,7 +12,7 @@
 		"@aragon/ui": "^1.0.0-alpha.28",
 		"bignumber.js": "^9.0.0",
 		"core-js": "^3.1.4",
-		"csvtojson": "^2.0.10",
+		"csvtojson": "^2.0.13",
 		"ethereumjs-util": "^6.1.0",
 		"ipfs-http-client": "^32.0.1",
 		"merkle-tree-solidity": "daonuts/merkle-tree-solidity#master",
